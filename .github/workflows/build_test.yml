@@ -74,40 +74,32 @@ jobs:
     strategy:
       matrix:
         os:
-          - name: manylinux
-            image_name: ubuntu-20.04
+          - image: ubuntu-20.04
             id: manylinux_x86_64
-          - name: win
-            image_name: windows-2019
+          - image: windows-2019
             id: win_amd64
-          - name: macosx
-            image_name: macos-10.15
+          - image: macos-10.15
             id: macosx_x86_64
-          - name: macosx
-            image_name: macos-10.15
+          - image: macos-10.15
             id: macosx_arm64
-        python-version:
-          - version: "3.7"
-            short-version: "37"
-          - version: "3.8"
-            short-version: "38"
-          - version: "3.9"
-            short-version: "39"
-          - version: "3.10"
-            short-version: "310"
+        python-version: ["3.7", "3.8", "3.9", "3.10"]
         exclude:
           - os:
               id: macosx_arm64
-            python-version:
-              version: 3.7
-    name: Build ${{ matrix.os.id }}-py${{ matrix.python-version.short-version }}
-    runs-on: ${{ matrix.os.image_name }}
+            python-version: 3.7
+    name: Build ${{ matrix.os.id }}-py${{ matrix.python-version }}
+    runs-on: ${{ matrix.os.image }}
     steps:
+      - name: Set shortver
+        run: echo "shortver=${longver//./}" >> $GITHUB_ENV
+        env:
+          longver: ${{ matrix.python-version }}
+        shell: bash
       - uses: actions/checkout@v2
       - name: Building wheel
         uses: pypa/cibuildwheel@v2.3.1
         env:
-          CIBW_BUILD: cp${{ matrix.python-version.short-version }}-${{ matrix.os.id }}
+          CIBW_BUILD: cp${{ env.shortver }}-${{ matrix.os.id }}
           CIBW_ARCHS_MACOS: "x86_64 arm64"
           CIBW_ARCHS_LINUX: "x86_64"
           CIBW_ARCHS_WINDOWS: "AMD64"
@@ -120,7 +112,7 @@ jobs:
         shell: bash
       - uses: actions/upload-artifact@v1
         with:
-          name: ${{ matrix.os.name }}_py${{ matrix.python-version }}
+          name: ${{ matrix.os.id }}_py${{ matrix.python-version }}
           path: dist/
 
   test:
