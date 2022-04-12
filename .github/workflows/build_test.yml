@@ -124,11 +124,11 @@ jobs:
       matrix:
         os:
          - image_name: ubuntu-latest
-           download_name: linux
+           download_name: manylinux_x86_64
          - image_name: macos-latest
-           download_name: macos
+           download_name: macosx_x86_64
          - image_name: windows-2019
-           download_name: windows
+           download_name: win_amd64
         python-version: ["3.7", "3.8", "3.9", "3.10"]
         cloud-provider: [aws, azure, gcp]
     steps:
@@ -235,7 +235,7 @@ jobs:
       - name: Download wheel(s)
         uses: actions/download-artifact@v2
         with:
-          name: linux_py3.7
+          name: manylinux_x86_64_py3.7
           path: dist
       - name: Show wheels downloaded
         run: ls -lh dist
