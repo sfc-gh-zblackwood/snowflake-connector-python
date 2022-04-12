@@ -113,7 +113,6 @@ jobs:
           CIBW_ARCHS_WINDOWS: "AMD64"
           CIBW_TEST_SKIP: "*"
           MACOSX_DEPLOYMENT_TARGET: 10.14  # Should be kept in sync with ci/build_darwin.sh
-          PYTHON_CROSSENV: 1  # TODO: add this only optionally
         with:
           output-dir: dist
       - name: Show wheels generated
