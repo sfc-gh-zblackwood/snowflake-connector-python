@@ -95,6 +95,11 @@ jobs:
             short-version: "39"
           - version: "3.10"
             short-version: "310"
+        exclude:
+          - os:
+              id: macosx_arm64
+            python-version:
+              version: 3.7
     name: Build ${{ matrix.os.id }}-py${{ matrix.python-version.short-version }}
     runs-on: ${{ matrix.os.image_name }}
     steps:
