@@ -74,26 +74,41 @@ jobs:
     strategy:
       matrix:
         os:
-          - name: linux
+          - name: manylinux
             image_name: ubuntu-20.04
-          - name: windows
+            id: manylinux_x86_64
+          - name: win
             image_name: windows-2019
-          - name: macos
+            id: win_amd64
+          - name: macosx
             image_name: macos-10.15
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
+            id: macosx_x86_64
+          - name: macosx
+            image_name: macos-10.15
+            id: macosx_arm64
+        python-version:
+          - version: "3.7"
+            short-version: "37"
+          - version: "3.8"
+            short-version: "38"
+          - version: "3.9"
+            short-version: "39"
+          - version: "3.10"
+            short-version: "310"
+    name: Build ${{ matrix.os.id }}-py${{ matrix.python-version.short-version }}
     runs-on: ${{ matrix.os.image_name }}
     steps:
       - uses: actions/checkout@v2
-      - name: Setup python
-        uses: actions/setup-python@main
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Display Python version
-        run: python -c "import sys; print(sys.version)"
       - name: Building wheel
         uses: pypa/cibuildwheel@v2.3.1
         env:
-          CIBW_ARCHS_MACOS: universal2
+          CIBW_BUILD: cp${{ matrix.python-version.short-version }}-${{ matrix.os.id }}
+          CIBW_ARCHS_MACOS: "x86_64 arm64"
+          CIBW_ARCHS_LINUX: "x86_64"
+          CIBW_ARCHS_WINDOWS: "AMD64"
+          CIBW_TEST_SKIP: "*"
+          MACOSX_DEPLOYMENT_TARGET: 10.14  # Should be kept in sync with ci/build_darwin.sh
+          PYTHON_CROSSENV: 1  # TODO: add this only optionally
         with:
           output-dir: dist
       - name: Show wheels generated
