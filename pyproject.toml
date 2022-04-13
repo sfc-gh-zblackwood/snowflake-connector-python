@@ -8,3 +8,17 @@ requires = [
     # Must be kept in sync with the `setup_requirements` in `setup.cfg`
     "pyarrow>=6.0.0,<6.1.0",
 ]
+
+[tool.cibuildwheel]
+test-skip = "*"
+
+[tool.cibuildwheel.linux]
+archs = ["x86_64"]
+
+[tool.cibuildwheel.macos]
+archs = ["x86_64", "arm64"]
+# Don't repair macOS wheels
+repair-wheel-command = ""
+
+[tool.cibuildwheel.windows]
+archs = ["AMD64"]
